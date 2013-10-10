@@ -48,26 +48,27 @@ for i1 = 1:nSub
     % Check if CDF versions exist
     if exist(CDFdimePath{i1},'file') == 2 % CDF Dimesimeter file exists
         dimeData = ProcessCDF(CDFdimePath{i1});
-        Time = dimeData.Variables.Time;
+        Time1 = dimeData.Variables.Time;
         CS = dimeData.Variables.CS;
         Activity = dimeData.Variables.Activity;
     else % CDF Actiwatch file does not exist
         % Reads the data from the dimesimeter data file
-        [Time,lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
+        [Time1,lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
         % Create a CDF version
-        WriteDimesimeterCDF(CDFdimePath{i1},Time,lux,CLA,CS,Activity);
+        WriteDimesimeterCDF(CDFdimePath{i1},Time1,lux,CLA,CS,Activity);
     end
     
     %% Crop data
-    idx1 = Time >= startTime(i1) & Time <= stopTime(i1);
-    Time = Time(idx1);
+    idx1 = Time1 >= startTime(i1) & Time1 <= stopTime(i1);
+    Time = Time1(idx1);
     CS = CS(idx1);
     Activity = Activity(idx1);
     
     %% Check for over cropping
     if isempty(Time)
         warning(['No data in bounds for subject ',num2str(subject(i1)),...
-            ' AIM ',num2str(AIM(i1))]);
+            ', AIM ',num2str(AIM(i1)),', dates: ',datestr(Time1(1)),...
+            ' to ',datestr(Time1(end))]);
         continue;
     end
     
