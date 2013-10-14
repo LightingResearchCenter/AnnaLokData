@@ -1,4 +1,4 @@
-function [C_time,C_magnitude] = millerDot(time1,CS,AI)
+function [C_time,C_magnitude] = millerDot(time1,CS,AI,titleStr)
 %MILLERDOT Creates a polar plot of CS, activity, and the centroid of CS
 %   time1 is an array of either datenum values or in units of days.
 %   CS is an array of circadian stimulus values equal in length to time.
@@ -49,10 +49,6 @@ millerDotPlot(theta,csFilt,'-b');
 % Plot the centroid
 millerDotPlot(C_theta,C_rho,'xr');
 hold(gca,'off');
-
-%% Plot the legend
-legend1 = legend('Activity','CS','CS Centroid');
-set(legend1,'Location','SouthOutside','Orientation','horizontal');
 
 end
 

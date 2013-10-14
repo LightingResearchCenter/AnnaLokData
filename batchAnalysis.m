@@ -18,7 +18,7 @@ resultsFolder = fullfile(projectFolder,'results');
 
 % Construct path names to data
 dimePath = fullfile(textFolder,dimeFile);
-CDFdimePath = fullfile(cdfFolder,regexprep(dimeFile,'\.txt','.cdf'));
+CDFDimePath = fullfile(cdfFolder,regexprep(dimeFile,'\.txt','.cdf'));
 
 %% Preallocate output
 nSub = length(subject);
@@ -55,8 +55,8 @@ for i1 = 1:nSub
         continue;
     end
     % Check if CDF versions exist
-    if exist(CDFdimePath{i1},'file') == 2 % CDF Dimesimeter file exists
-        dimeData = ProcessCDF(CDFdimePath{i1});
+    if exist(CDFDimePath{i1},'file') == 2 % CDF Dimesimeter file exists
+        dimeData = ProcessCDF(CDFDimePath{i1});
         Time1 = dimeData.Variables.Time;
         CS = dimeData.Variables.CS;
         Lux = dimeData.Variables.Lux;
@@ -66,7 +66,7 @@ for i1 = 1:nSub
         % Reads the data from the dimesimeter data file
         [Time1,Lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
         % Create a CDF version
-        WriteDimesimeterCDF(CDFdimePath{i1},Time1,Lux,CLA,CS,Activity);
+        WriteDimesimeterCDF(CDFDimePath{i1},Time1,Lux,CLA,CS,Activity);
     end
     
     %% Crop data
