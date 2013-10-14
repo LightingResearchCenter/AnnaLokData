@@ -2,7 +2,7 @@ function batchAnalysis
 %BATCHANALYSIS Summary of this function goes here
 %   Detailed explanation goes here
 
-addpath('IO','CDF');
+addpath('IO','CDF','phasorAnalysis');
 
 %% File handling
 projectFolder = fullfile([filesep,filesep],'root','projects',...
@@ -26,6 +26,9 @@ output = dataset;
 output.subject = subject;
 output.AIM = AIM;
 output.wakingCS = cell(nSub,1);
+output.meanCS = cell(nSub,1);
+output.logLux = cell(nSub,1);
+output.logCLA = cell(nSub,1);
 output.ActualSleep = cell(nSub,1);
 output.ActualSleepPercent = cell(nSub,1);
 output.ActualWake = cell(nSub,1);
@@ -36,6 +39,12 @@ output.SleepBouts = cell(nSub,1);
 output.WakeBouts = cell(nSub,1);
 output.MeanSleepBout = cell(nSub,1);
 output.MeanWakeBout = cell(nSub,1);
+output.phasorMagnitude = cell(nSub,1);
+output.phasorAngle = cell(nSub,1);
+output.IS = cell(nSub,1);
+output.IV = cell(nSub,1);
+output.MagH = cell(nSub,1);
+output.f24abs = cell(nSub,1);
 
 %% Begin main loop
 for i1 = 1:nSub
@@ -50,18 +59,22 @@ for i1 = 1:nSub
         dimeData = ProcessCDF(CDFdimePath{i1});
         Time1 = dimeData.Variables.Time;
         CS = dimeData.Variables.CS;
+        Lux = dimeData.Variables.Lux;
+        CLA = dimeData.Variables.CLA;
         Activity = dimeData.Variables.Activity;
     else % CDF Actiwatch file does not exist
         % Reads the data from the dimesimeter data file
-        [Time1,lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
+        [Time1,Lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
         % Create a CDF version
-        WriteDimesimeterCDF(CDFdimePath{i1},Time1,lux,CLA,CS,Activity);
+        WriteDimesimeterCDF(CDFdimePath{i1},Time1,Lux,CLA,CS,Activity);
     end
     
     %% Crop data
     idx1 = Time1 >= startTime(i1) & Time1 <= stopTime(i1);
     Time = Time1(idx1);
     CS = CS(idx1);
+    Lux = Lux(idx1);
+    CLA = CLA(idx1);
     Activity = Activity(idx1);
     
     %% Check for over cropping
@@ -72,13 +85,17 @@ for i1 = 1:nSub
         continue;
     end
     
-    %% Filter data
-    CS = gaussian(CS,4);
-    Activity = gaussian(Activity,4);
-    
     %% Perform analysis
     output.wakingCS{i1} = ...
         wakingCS(Time,CS,Activity,bedTime(i1),wakeTime(i1));
+    
+    output.meanCS{i1} = mean(CS);
+    idx2 = Lux == 0;
+    Lux(idx2) = 0.01;
+    output.logLux{i1} = mean(log(Lux));
+    idx3 = CLA == 0;
+    CLA(idx3) = 0.01;
+    output.logCLA{i1} = mean(log(CLA));
     
     [output.ActualSleep{i1},output.ActualSleepPercent{i1},...
         output.ActualWake{i1},output.ActualWakePercent{i1},...
@@ -86,6 +103,10 @@ for i1 = 1:nSub
         output.SleepBouts{i1},output.WakeBouts{i1},...
         output.MeanSleepBout{i1},output.MeanWakeBout{i1}] = ...
         AnalyzeFile(Time,Activity,bedTime(i1),wakeTime(i1));
+    
+    [output.phasorMagnitude{i1},output.phasorAngle{i1},output.IS{i1},...
+        output.IV{i1},~,output.MagH{i1},output.f24abs{i1}] = ...
+        phasorAnalysis(Time,CS,Activity);
 end
 
 %% Save output

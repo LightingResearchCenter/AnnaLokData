@@ -4,6 +4,8 @@ function meanWakingCS = wakingCS(Time,CS,Activity,bedTime,wakeTime)
 
 addpath('sleepAnalysis');
 
+Activity = gaussian(Activity,4);
+
 % Find sleep state, 1 = sleeping, 0 = not sleeping
 sleepState = FindSleepState(Activity,'auto',3);
 

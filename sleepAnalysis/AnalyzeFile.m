@@ -2,6 +2,8 @@ function [ActualSleep,ActualSleepPercent,ActualWake,...
     ActualWakePercent,SleepEfficiency,Latency,SleepBouts,WakeBouts,...
     MeanSleepBout,MeanWakeBout] = AnalyzeFile(Time,Activity,bedTime,wakeTime)
 
+Activity = gaussian(Activity,4);
+
 %% Vectorize bed times and wake times
 startDays = floor(min(Time)):floor(max(Time));
 bedTimes = startDays + bedTime;
