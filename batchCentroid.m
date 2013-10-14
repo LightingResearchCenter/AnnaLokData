@@ -117,10 +117,16 @@ for i1 = 1:length(unqSub) % Begin main loop through all subjects
         % Plot the data
         [~,~] = millerDot(Time,CS,Activity,subTitle);
         % Plot bed time and wake time
+        thetaBed = bedTime(idx1)*2*pi;
+        line([0,.7*cos(thetaBed)],[0,.7*sin(thetaBed)],...
+            'Color','k','LineWidth',1.5);
+        thetaWake = wakeTime(idx1)*2*pi;
+        line([0,.7*cos(thetaWake)],[0,.7*sin(thetaWake)],...
+            'Color','k','LineWidth',1.5,'LineStyle','--');
         % Plot one legend
         if i2 == 1
             legend1 = legend('Activity','CS','CS Centroid',...
-                'Orientation','horizontal');
+                'Bed Time','Wake Time','Orientation','horizontal');
             posLeg = get(legend1,'Position');
             set(legend1,'Position',...
                 [0.5-posLeg(3)/2,axY(i2)-ySpace-posLeg(4),posLeg(3:4)]);

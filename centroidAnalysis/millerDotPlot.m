@@ -150,7 +150,7 @@ function hpol = millerDotPlot(varargin)
             'HandleVisibility', 'off', 'Parent', cax);
         
         % annotate spokes in hours
-        rt = 1.1 * rmax;
+        rt = 1.125 * rmax;
         for i = 1 : length(th)
             text(rt * cst(i), rt * snt(i), [int2str(i * 2),':00'],...
                 'HorizontalAlignment', 'center', ...
