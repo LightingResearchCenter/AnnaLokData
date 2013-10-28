@@ -1,8 +1,10 @@
 function batchAnalysis
 %BATCHANALYSIS Summary of this function goes here
 %   Detailed explanation goes here
+[parentDir,~,~] = fileparts(pwd);
+CDFtoolkit = fullfile(parentDir,'LRC-CDFtoolkit');
+addpath('IO',CDFtoolkit,'phasorAnalysis');
 
-addpath('IO','CDF','phasorAnalysis');
 
 %% File handling
 projectFolder = fullfile([filesep,filesep],'root','projects',...
@@ -49,20 +51,20 @@ output.f24abs = cell(nSub,1);
 %% Begin main loop
 for i1 = 1:nSub
     %% Load Dimesimeter file
-    % Check if Dimesimeter file exists
-    if exist(dimePath{i1},'file') ~= 2
-        warning(['Dimesimeter file does not exist. File: ',dimePath{i1}]);
-        continue;
-    end
     % Check if CDF versions exist
     if exist(CDFDimePath{i1},'file') == 2 % CDF Dimesimeter file exists
         dimeData = ProcessCDF(CDFDimePath{i1});
-        Time1 = dimeData.Variables.Time;
+        Time1 = dimeData.Variables.time;
         CS = dimeData.Variables.CS;
-        Lux = dimeData.Variables.Lux;
+        Lux = dimeData.Variables.illuminance;
         CLA = dimeData.Variables.CLA;
-        Activity = dimeData.Variables.Activity;
-    else % CDF Actiwatch file does not exist
+        Activity = dimeData.Variables.activity;
+    else % CDF Dimesimeter file does not exist
+        % Check if Dimesimeter file exists
+        if exist(dimePath{i1},'file') ~= 2
+            warning(['Dimesimeter file does not exist. File: ',dimePath{i1}]);
+            continue;
+        end
         % Reads the data from the dimesimeter data file
         [Time1,Lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
         % Create a CDF version

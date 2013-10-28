@@ -22,11 +22,11 @@ cdfID = cdflib.create(SaveName);
 % Create Variables                                          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-varTime = cdflib.createVar(cdfID,'Time','CDF_EPOCH',1,[],true,[]);
-varLux = cdflib.createVar(cdfID,'Lux','CDF_REAL8',1,[],true,[]);
+varTime = cdflib.createVar(cdfID,'time','CDF_EPOCH',1,[],true,[]);
+varLux = cdflib.createVar(cdfID,'illuminance','CDF_REAL8',1,[],true,[]);
 varCLA = cdflib.createVar(cdfID,'CLA','CDF_REAL8',1,[],true,[]);
 varCS = cdflib.createVar(cdfID,'CS','CDF_REAL8',1,[],true,[]);
-varActivity = cdflib.createVar(cdfID,'Activity','CDF_REAL8',1,[],true,[]);
+varActivity = cdflib.createVar(cdfID,'activity','CDF_REAL8',1,[],true,[]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Allocate Records                                          %
@@ -45,11 +45,11 @@ cdflib.setVarAllocBlockRecords(cdfID,varActivity,1,numRecords);
 % -CDF assigns a number to each variable. Records are       %
 % written to variables using the appropriate number.        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-timeVarNum = cdflib.getVarNum(cdfID,'Time');
-luxVarNum = cdflib.getVarNum(cdfID,'Lux');
+timeVarNum = cdflib.getVarNum(cdfID,'time');
+luxVarNum = cdflib.getVarNum(cdfID,'illuminance');
 CLAVarNum = cdflib.getVarNum(cdfID,'CLA');
 CSVarNum = cdflib.getVarNum(cdfID,'CS');
-activityVarNum = cdflib.getVarNum(cdfID,'Activity');
+activityVarNum = cdflib.getVarNum(cdfID,'activity');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Write Records                                             %
