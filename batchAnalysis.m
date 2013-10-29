@@ -68,7 +68,7 @@ for i1 = 1:nSub
         % Reads the data from the dimesimeter data file
         [Time1,Lux,CLA,CS,Activity] = importDime(dimePath{i1},dimeSN(i1));
         % Create a CDF version
-        WriteDimesimeterCDF(CDFDimePath{i1},Time1,Lux,CLA,CS,Activity);
+        WriteDaysimeterCDF(CDFDimePath{i1},Time1,Lux,CLA,CS,Activity);
     end
     
     %% Crop data
