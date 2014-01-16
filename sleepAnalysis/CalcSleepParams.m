@@ -6,14 +6,17 @@ function [ActualSleep,ActualSleepPercent,...
 %   Values and calculations are taken from Avtiware-Sleep
 %   Version 3.4 documentation Appendix: A-1 Actiwatch Algorithm
 
+wakeTrim = Time <= bedTime | Time >= wakeTime;
+wakeActivityAvg = mean(Activity(wakeTrim));
+
 % Trim Activity and Time to times within the Start and End of the analysis
 % period
-idx = Time >= bedTime & Time <= wakeTime;
-Time = Time(idx);
-Activity = Activity(idx);
+sleepTrim = Time >= bedTime & Time <= wakeTime;
+Time = Time(sleepTrim);
+Activity = Activity(sleepTrim);
 
 % Find the sleep state
-sleepState = FindSleepState(Activity,'auto',3);
+sleepState = FindSleepState(Activity, wakeActivityAvg, 0.888);
 
 Epoch = etime(datevec(Time(2)),datevec(Time(1))); % Find epoch length
 n = ceil(300/Epoch); % Number of points in a 5 minute interval
