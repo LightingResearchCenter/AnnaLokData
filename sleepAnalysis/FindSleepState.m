@@ -13,7 +13,7 @@ function sleepState = FindSleepState(activity,threshold,f)
 % Make Activity array vertical
 activity = activity(:);
 
-% Calculate Sleep State 1 = sleeping 0 = not sleeping
+% Calculate Sleep State 1 = sleeping; 0 = not sleeping
 sleepState = activity <= threshold*f;
 
 end
