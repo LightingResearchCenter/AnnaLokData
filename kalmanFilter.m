@@ -7,7 +7,7 @@ function kfOutput = kalmanFilter(input)
     kfOutput = StandardKalmanFilter(input', MAlen, N, 'EWMA');
 	kfOutput = kfOutput(114:end);
 	
-	% Plot results
+% 	% Plot results
 	figure
 	subplot(2,1,1)
 	%input = input - min(input);

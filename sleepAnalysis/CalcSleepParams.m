@@ -1,7 +1,7 @@
 function [ActualSleep,ActualSleepPercent,...
     ActualWake,ActualWakePercent,SleepEfficiency,Latency,SleepBouts,...
     WakeBouts,MeanSleepBout,MeanWakeBout] = ...
-    CalcSleepParams(Activity,Time,bedTime,wakeTime,prevWakeTime)
+    CalcSleepParams(Activity,Time,bedTime,wakeTime)
 %CALCSLEEPPARAMS Calculate sleep parameters using Actiware method
 %   Values and calculations are taken from Avtiware-Sleep
 %   Version 3.4 documentation Appendix: A-1 Actiwatch Algorithm
@@ -10,7 +10,7 @@ Epoch = etime(datevec(Time(2)),datevec(Time(1))); % Find epoch length
 n = ceil(300/Epoch); % Number of points in a 5 minute interval
 serialEpoch = Epoch / 60 / 60 / 24;
 
-% prevWakeTrim = Time >= prevWakeTime & Time <= bedTime;
+%prevWakeTrim = Time >= prevWakeTime & Time <= bedTime;
 wakeActivityAvg = mean(Activity);
 
 % Trim Activity and Time to times within the Start and End of the analysis
@@ -25,47 +25,66 @@ sleepState = FindSleepState(kfActivity, wakeActivityAvg, .888);
 sleepTrim = Time >= bedTime & Time <= wakeTime;
 Time = Time(sleepTrim);
 
-% Find Sleep Start
-i = 1+n;
-while i <= length(sleepState)-n
-    if length(find(sleepState(i-n:i+n)==0)) == 1
-        SleepStart = Time(i);
-        break
-    else
-        i = i+1;
-    end
-end
+sleepStarts = [];
+sleepEnds = [];
+i = 1;
+j = 1;
 
-% Set Sleep Start to Bed Time if it was not found
-if exist('SleepStart','var') == 0
-    SleepStart = bedTime + (Time(2) - Time(1));
-end
+while i <= length(sleepState) - n*6 && j <= length(sleepState) - n*2
+	% Find Sleep Start
+	hasStart = true;
+	while i <= length(sleepState) - n*6
+		numSleepingPts = length(find(sleepState(i:i+n*6)));
+		if numSleepingPts >= 0.9*(n*6)
+			sleepStarts = [sleepStarts, Time(i)];
+			break
+		elseif i+1 == length(sleepState) - n*2
+			hasStart = false;
+		else
+			i = i+1;
+		end
+	end
+	
+	if ~hasStart
+		break;
+	end
 
-% Find Sleep End
-j = length(Time)-n;
-while j > n+1
-    if length(find(sleepState(j-n:j+n)==0)) == 1
-        SleepEnd = Time(j);
-        break
-    else
-        j = j-1;
-    end
+% 	% Set Sleep Start to Bed Time if it was not found
+% 	if exist('SleepStart','var') == 0
+% 		sleepStarts = [sleepStarts, bedTime + (Time(2) - Time(1))];
+% 	end
+
+	% Find Sleep End
+	j = i;
+	while j < length(sleepState) - n*2
+		numSleepingPts = length(find(sleepState(j:j+n*2)));
+		if numSleepingPts <= 0.1*(n*2)
+			sleepEnds = [sleepEnds, Time(j)];
+			break
+		elseif j+1 == length(sleepState) - n*2
+			sleepEnds = [sleepEnds, Time(j+1)];
+			break;
+		else
+			j = j+1;
+		end
+	end
+	i = j;
 end
 
 % If Sleep Start not found break operation and return zero values
-if exist('SleepEnd','var') == 0
-    ActualSleep = 0;
-    ActualWake = 0;
-    ActualSleepPercent = 0;
-    ActualWakePercent = 0;
-    SleepEfficiency = 0;
-    Latency = 0;
-    SleepBouts = 0;
-    WakeBouts = 0;
-    MeanSleepBout = 0;
-    MeanWakeBout = 0;
-    return;
-end
+% if exist('SleepEnd','var') == 0
+%     ActualSleep = 0;
+%     ActualWake = 0;
+%     ActualSleepPercent = 0;
+%     ActualWakePercent = 0;
+%     SleepEfficiency = 0;
+%     Latency = 0;
+%     SleepBouts = 0;
+%     WakeBouts = 0;
+%     MeanSleepBout = 0;
+%     MeanWakeBout = 0;
+%     return;
+% end
 
 
 %% Calculate the parameters
