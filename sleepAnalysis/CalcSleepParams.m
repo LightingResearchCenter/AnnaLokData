@@ -38,7 +38,7 @@ while i <= length(sleepState) - n*6 && j <= length(sleepState) - n*2
 		if numSleepingPts >= 0.9*(n*6)
 			sleepStarts = [sleepStarts, Time(i)];
 			break
-		elseif i+1 == length(sleepState) - n*2
+		elseif i+1 == length(sleepState) - n*6
 			hasStart = false;
 		else
 			i = i+1;
@@ -48,11 +48,6 @@ while i <= length(sleepState) - n*6 && j <= length(sleepState) - n*2
 	if ~hasStart
 		break;
 	end
-
-% 	% Set Sleep Start to Bed Time if it was not found
-% 	if exist('SleepStart','var') == 0
-% 		sleepStarts = [sleepStarts, bedTime + (Time(2) - Time(1))];
-% 	end
 
 	% Find Sleep End
 	j = i;
@@ -71,24 +66,17 @@ while i <= length(sleepState) - n*6 && j <= length(sleepState) - n*2
 	i = j;
 end
 
-% If Sleep Start not found break operation and return zero values
-% if exist('SleepEnd','var') == 0
-%     ActualSleep = 0;
-%     ActualWake = 0;
-%     ActualSleepPercent = 0;
-%     ActualWakePercent = 0;
-%     SleepEfficiency = 0;
-%     Latency = 0;
-%     SleepBouts = 0;
-%     WakeBouts = 0;
-%     MeanSleepBout = 0;
-%     MeanWakeBout = 0;
-%     return;
-% end
-
 
 %% Calculate the parameters
-inBedSleeping = Time >= SleepStart & Time <= SleepEnd;
+inBedSleeping = [];
+for k = 1:length(sleepStarts)
+	if k == 1
+		inBedSleeping = Time >= sleepStarts(1) & Time <= sleepEnds(1);
+	else
+		inBedSleeping = inBedSleeping |...
+			(Time >= sleepStarts(k) & Time <= sleepEnds(k));
+	end
+end
 % Calculate Actual Sleep Time in minutes
 ActualSleep = sum(sleepState(inBedSleeping))*Epoch/60;
 % Calculate Actual Wake Time in minutes
@@ -103,7 +91,7 @@ ActualWakePercent = ActualWake/AssumedSleep;
 TimeInBed = etime(datevec(wakeTime),datevec(bedTime))/60;
 SleepEfficiency = ActualSleep/TimeInBed;
 % Calculate Sleep Latency in minutes
-Latency = etime(datevec(SleepStart),datevec(bedTime))/60;
+Latency = etime(datevec(sleepStarts(1)),datevec(bedTime))/60;
 % Find Sleep Bouts and Wake Bouts
 SleepBouts = 0;
 WakeBouts = 0;
