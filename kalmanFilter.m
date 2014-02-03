@@ -8,20 +8,22 @@ function kfOutput = kalmanFilter(input)
 	kfOutput = kfOutput(114:end);
 	
 % 	% Plot results
-	figure
-	subplot(2,1,1)
-	%input = input - min(input);
-	%input = input/max(input);
-	plot(input(114:end),'b');
-	title('Activity Data');
-	hold on;
-	grid on;
-	subplot(2,1,2)
-	%kfOutput = kfOutput - min(kfOutput((MAlen+N-1):end));
-	%kfOutput= kfOutput/max(kfOutput((MAlen+N-1):end));
-	plot(kfOutput,'r');
-	hold on;
-	grid on;
-	kfOutput = kfOutput';
+    if true
+        figure
+        subplot(2,1,1)
+        %input = input - min(input);
+        %input = input/max(input);
+        plot(input(114:end),'b');
+        title('Activity Data');
+        hold on;
+        grid on;
+        subplot(2,1,2)
+        %kfOutput = kfOutput - min(kfOutput((MAlen+N-1):end));
+        %kfOutput= kfOutput/max(kfOutput((MAlen+N-1):end));
+        plot(kfOutput,'r');
+        hold on;
+        grid on;
+        kfOutput = kfOutput';
+    end
 end
 

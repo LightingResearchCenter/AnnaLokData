@@ -37,7 +37,7 @@ dWakeBouts = zeros(nDays,1);
 dMeanSleepBout = zeros(nDays,1);
 dMeanWakeBout = zeros(nDays,1);
 %% Call function to calculate sleep parameters for each day
-for i = 1:nDays
+for i = 6:nDays
     try
         [dActualSleep(i),dActualSleepPercent(i),dActualWake(i),...
             dActualWakePercent(i),dSleepEfficiency(i),dLatency(i),...
@@ -45,6 +45,7 @@ for i = 1:nDays
             = CalcSleepParams(Activity,Time,bedTimes(i),wakeTimes(i));
     catch err
         display(err.message);
+        %display(err.stack);
         continue;
     end
 end

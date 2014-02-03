@@ -49,7 +49,7 @@ output.MagH = cell(nSub,1);
 output.f24abs = cell(nSub,1);
 
 %% Begin main loop
-for i1 = 1:nSub
+for i1 = 7:nSub
     %% Load Dimesimeter file
     % Check if CDF versions exist
     if exist(CDFDimePath{i1},'file') == 2 % CDF Dimesimeter file exists

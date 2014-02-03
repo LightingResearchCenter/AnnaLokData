@@ -40,6 +40,7 @@ while i <= length(sleepState) - n*6 && j <= length(sleepState) - n*2
 			break
 		elseif i+1 == length(sleepState) - n*6
 			hasStart = false;
+            i = i+1;
 		else
 			i = i+1;
 		end
