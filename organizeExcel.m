@@ -3,7 +3,7 @@ function organizeExcel(inputFile)
 %   Format for Mariana
 load(inputFile);
 saveFile = regexprep(inputFile,'\.mat','\.xlsx');
-inputData = output;
+inputData = struct2dataset(output);
 clear output;
 
 %% Determine variable names

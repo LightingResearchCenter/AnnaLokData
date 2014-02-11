@@ -1,8 +1,9 @@
-function [ActualSleep,ActualSleepPercent,ActualWake,...
+function [Subject,AIM,Date,ActualSleep,ActualSleepPercent,ActualWake,...
     ActualWakePercent,SleepEfficiency,Latency,SleepBouts,WakeBouts,...
-    MeanSleepBout,MeanWakeBout] = AnalyzeFile(Time,Activity,bedTime,wakeTime)
+    MeanSleepBout,MeanWakeBout] = AnalyzeFile(subject,aim,Time,Activity,bedTime,wakeTime)
 
-Activity = gaussian(Activity,4);
+% Find maximum activity
+maxActi = max(Activity);
 
 %% Vectorize bed times and wake times
 startDays = floor(min(Time)):floor(max(Time));
@@ -23,42 +24,75 @@ if bedTimes(1) < min(Time) || wakeTimes(1) < min(Time)
     wakeTimes(1) = [];
 end
 
+% Set analysis start and end times
+analysisStartTime = bedTimes - 20/60/24;
+analysisEndTime = wakeTimes + 20/60/24;
+
+% Calculate Epoch to the nearest second
+epoch = round(mean(diff(Time)*24*60*60));
+
 nDays = length(bedTimes);
 
 %% Preallocate sleep parameters
-dActualSleep = zeros(nDays,1);
-dActualSleepPercent = zeros(nDays,1);
-dActualWake = zeros(nDays,1);
-dActualWakePercent = zeros(nDays,1);
-dSleepEfficiency = zeros(nDays,1);
-dLatency = zeros(nDays,1);
-dSleepBouts = zeros(nDays,1);
-dWakeBouts = zeros(nDays,1);
-dMeanSleepBout = zeros(nDays,1);
-dMeanWakeBout = zeros(nDays,1);
+Subject = cell(nDays,1);
+AIM = cell(nDays,1);
+Date = cell(nDays,1);
+ActualSleep = cell(nDays,1);
+ActualSleepPercent = cell(nDays,1);
+ActualWake = cell(nDays,1);
+ActualWakePercent = cell(nDays,1);
+SleepEfficiency = cell(nDays,1);
+Latency = cell(nDays,1);
+SleepBouts = cell(nDays,1);
+WakeBouts = cell(nDays,1);
+MeanSleepBout = cell(nDays,1);
+MeanWakeBout = cell(nDays,1);
+
+dateFormat = 'dd-mmm-yy';
+dateTimeFormat = 'dd-mmm-yyyy HH:MM';
 %% Call function to calculate sleep parameters for each day
-for i = 6:nDays
+for i1 = 1:nDays
+    Subject{i1} = subject;
+    AIM{i1} = aim;
+    Date{i1} = datestr(floor(analysisStartTime(i1)),dateFormat);
     try
-        [dActualSleep(i),dActualSleepPercent(i),dActualWake(i),...
-            dActualWakePercent(i),dSleepEfficiency(i),dLatency(i),...
-            dSleepBouts(i),dWakeBouts(i),dMeanSleepBout(i),dMeanWakeBout(i)]...
-            = CalcSleepParams(Activity,Time,bedTimes(i),wakeTimes(i));
+        param = fullSleepAnalysis(Time,Activity,epoch,...
+                analysisStartTime(i1),analysisEndTime(i1),...
+                bedTimes(i1),wakeTimes(i1),'auto');
     catch err
         display(err.message);
         %display(err.stack);
         continue;
     end
+    
+    if param.sleepEfficiency == 1
+        plot(Time,Activity);
+        hold on;
+        patch([analysisStartTime(i1),analysisStartTime(i1),...
+            analysisEndTime(i1),analysisEndTime(i1)],...
+            [0,maxActi,maxActi,0],'r','FaceAlpha',.5);
+            
+        title({['Subject ',num2str(subject),' AIM ',num2str(aim)];...
+            [datestr(analysisStartTime(i1),dateTimeFormat),' - ',datestr(analysisEndTime(i1),dateTimeFormat)]});
+        datetick2;
+        saveas(gcf,['sub',num2str(subject),'_AIM',num2str(aim),'_',datestr(analysisStartTime(i1),'dd-mm-yyyy'),'.png']);
+%         display('Program paused. Press any key to continue.')
+%         pause;
+        hold off;
+    end
+    
+    ActualSleep{i1} = m2hm(param.actualSleepTime);
+    ActualSleepPercent{i1} = param.actualSleepPercent;
+    ActualWake{i1} = m2hm(param.actualWakeTime);
+    ActualWakePercent{i1} = param.actualWakePercent;
+    SleepEfficiency{i1} = param.sleepEfficiency;
+    Latency{i1} = m2hm(param.sleepLatency);
+    SleepBouts{i1} = param.sleepBouts;
+    WakeBouts{i1} = param.wakeBouts;
+    MeanSleepBout{i1} = m2hms(param.meanSleepBoutTime);
+    MeanWakeBout{i1} = m2hms(param.meanWakeBoutTime);
+    
+    clear param;
 end
 
-%% Average the parameters
-ActualSleep = mean(dActualSleep);
-ActualSleepPercent = mean(dActualSleepPercent);
-ActualWake = mean(dActualWake);
-ActualWakePercent = mean(dActualWakePercent);
-SleepEfficiency = mean(dSleepEfficiency);
-Latency = mean(dLatency);
-SleepBouts = mean(dSleepBouts);
-WakeBouts = mean(dWakeBouts);
-MeanSleepBout = mean(dMeanSleepBout);
-MeanWakeBout = mean(dMeanWakeBout);
 end
