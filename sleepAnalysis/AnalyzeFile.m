@@ -1,4 +1,4 @@
-function [Subject,AIM,Date,ActualSleep,ActualSleepPercent,ActualWake,...
+function [Line,Subject,AIM,Date,ActualSleep,ActualSleepPercent,ActualWake,...
     ActualWakePercent,SleepEfficiency,Latency,SleepBouts,WakeBouts,...
     MeanSleepBout,MeanWakeBout] = AnalyzeFile(subject,aim,Time,Activity,bedTime,wakeTime)
 
@@ -27,6 +27,8 @@ end
 % Set analysis start and end times
 analysisStartTime = bedTimes - 20/60/24;
 analysisEndTime = wakeTimes + 20/60/24;
+% analysisStartTime = bedTimes - 1/24;
+% analysisEndTime = wakeTimes + 1/24;
 
 % Calculate Epoch to the nearest second
 epoch = round(mean(diff(Time)*24*60*60));
@@ -34,8 +36,9 @@ epoch = round(mean(diff(Time)*24*60*60));
 nDays = length(bedTimes);
 
 %% Preallocate sleep parameters
-Subject = cell(nDays,1);
-AIM = cell(nDays,1);
+Line = zeros(nDays,1);
+Subject = zeros(nDays,1);
+AIM = -1.*ones(nDays,1);
 Date = cell(nDays,1);
 ActualSleep = cell(nDays,1);
 ActualSleepPercent = cell(nDays,1);
@@ -50,11 +53,24 @@ MeanWakeBout = cell(nDays,1);
 
 dateFormat = 'dd-mmm-yy';
 dateTimeFormat = 'dd-mmm-yyyy HH:MM';
+
+plot(Time,Activity);
+datetick2;
+title({['Subject ',num2str(subject),' AIM ',num2str(aim)];...
+        [datestr(analysisStartTime(1),dateFormat),' - ',datestr(analysisEndTime(end),dateFormat)]});
+hold on;
+
 %% Call function to calculate sleep parameters for each day
 for i1 = 1:nDays
-    Subject{i1} = subject;
-    AIM{i1} = aim;
+    Line(i1) = subject + i1/10;
+    Subject(i1) = subject;
+    AIM(i1) = aim;
     Date{i1} = datestr(floor(analysisStartTime(i1)),dateFormat);
+    
+    patch([analysisStartTime(i1),analysisStartTime(i1),...
+            analysisEndTime(i1),analysisEndTime(i1)],...
+            [0,maxActi,maxActi,0],'r','FaceAlpha',.5);
+    
     try
         param = fullSleepAnalysis(Time,Activity,epoch,...
                 analysisStartTime(i1),analysisEndTime(i1),...
@@ -64,35 +80,22 @@ for i1 = 1:nDays
         %display(err.stack);
         continue;
     end
-    
-    if param.sleepEfficiency == 1
-        plot(Time,Activity);
-        hold on;
-        patch([analysisStartTime(i1),analysisStartTime(i1),...
-            analysisEndTime(i1),analysisEndTime(i1)],...
-            [0,maxActi,maxActi,0],'r','FaceAlpha',.5);
-            
-        title({['Subject ',num2str(subject),' AIM ',num2str(aim)];...
-            [datestr(analysisStartTime(i1),dateTimeFormat),' - ',datestr(analysisEndTime(i1),dateTimeFormat)]});
-        datetick2;
-        saveas(gcf,['sub',num2str(subject),'_AIM',num2str(aim),'_',datestr(analysisStartTime(i1),'dd-mm-yyyy'),'.png']);
-%         display('Program paused. Press any key to continue.')
-%         pause;
-        hold off;
-    end
-    
-    ActualSleep{i1} = m2hm(param.actualSleepTime);
+        
+    ActualSleep{i1} = param.actualSleepTime;
     ActualSleepPercent{i1} = param.actualSleepPercent;
-    ActualWake{i1} = m2hm(param.actualWakeTime);
+    ActualWake{i1} = param.actualWakeTime;
     ActualWakePercent{i1} = param.actualWakePercent;
     SleepEfficiency{i1} = param.sleepEfficiency;
-    Latency{i1} = m2hm(param.sleepLatency);
+    Latency{i1} = param.sleepLatency;
     SleepBouts{i1} = param.sleepBouts;
     WakeBouts{i1} = param.wakeBouts;
-    MeanSleepBout{i1} = m2hms(param.meanSleepBoutTime);
-    MeanWakeBout{i1} = m2hms(param.meanWakeBoutTime);
+    MeanSleepBout{i1} = param.meanSleepBoutTime;
+    MeanWakeBout{i1} = param.meanWakeBoutTime;
     
     clear param;
 end
+
+saveas(gcf,['plots',filesep,'sub',num2str(subject),'_AIM',num2str(aim),'_',datestr(analysisStartTime(1),'yyyy-mm-dd'),'.png']);
+hold off;
 
 end

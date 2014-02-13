@@ -26,8 +26,9 @@ CDFDimePath = fullfile(cdfFolder,regexprep(dimeFile,'\.txt','.cdf'));
 %% Preallocate output
 nSub = length(subject);
 output = struct;
-output.subject = {};
-output.AIM = {};
+output.line = [];
+output.subject = [];
+output.AIM = [];
 output.Date = {};
 output.ActualSleep = {};
 output.ActualSleepPercent = {};
@@ -82,14 +83,15 @@ for i1 = 1:nSub
     
     %% Perform analysis
     % Run sleep analysis
-    [tempSubject,tempAIM,tempDate,tempActualSleep,tempActualSleepPercent,...
+    [tempLine,tempSubject,tempAIM,tempDate,tempActualSleep,tempActualSleepPercent,...
         tempActualWake,tempActualWakePercent,...
         tempSleepEfficiency,tempLatency,...
         tempSleepBouts,tempWakeBouts,...
         tempMeanSleepBout,tempMeanWakeBout] = ...
-        AnalyzeFile(subject(i1),AIM(i1),time,activity,21/24,6/24);
+        AnalyzeFile(subject(i1),AIM(i1),time,activity,bedTime(i1),getupTime(i1));
     
     %% Combine variables
+    output.line = [output.line;tempLine];
     output.subject = [output.subject;tempSubject];
     output.AIM = [output.AIM;tempAIM];
     output.Date = [output.Date;tempDate];
@@ -105,10 +107,11 @@ for i1 = 1:nSub
     output.MeanWakeBout = [output.MeanWakeBout;tempMeanWakeBout];
 end
 
+close all;
+
 %% Save output
 outputPath = fullfile(resultsFolder,['sleep_',datestr(now,'yyyy-mm-dd_HH-MM')]);
 save([outputPath,'.mat'],'output');
-outputCell = dataset2cell(struct2dataset(output));
-xlswrite([outputPath,'.xlsx'],outputCell);
+organizeExcel([outputPath,'.mat'])
 end
 
