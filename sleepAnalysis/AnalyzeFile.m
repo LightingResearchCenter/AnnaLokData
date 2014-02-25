@@ -27,11 +27,6 @@ end
 % Set analysis start and end times
 analysisStartTime = bedTimes - 20/60/24;
 analysisEndTime = wakeTimes + 20/60/24;
-% analysisStartTime = bedTimes - 1/24;
-% analysisEndTime = wakeTimes + 1/24;
-
-% Calculate Epoch to the nearest second
-epoch = round(mean(diff(Time)*24*60*60));
 
 nDays = length(bedTimes);
 
@@ -72,7 +67,7 @@ for i1 = 1:nDays
             [0,maxActi,maxActi,0],'r','FaceAlpha',.5);
     
     try
-        param = fullSleepAnalysis(Time,Activity,epoch,...
+        param = fullSleepAnalysis(Time,Activity,...
                 analysisStartTime(i1),analysisEndTime(i1),...
                 bedTimes(i1),wakeTimes(i1),'auto');
     catch err
