@@ -1,6 +1,8 @@
 function [Line,Subject,AIM,Date,ActualSleep,ActualSleepPercent,ActualWake,...
     ActualWakePercent,SleepEfficiency,Latency,SleepBouts,WakeBouts,...
-    MeanSleepBout,MeanWakeBout] = AnalyzeFile(subject,aim,Time,Activity,bedTime,wakeTime)
+    MeanSleepBout,MeanWakeBout, ImmobilityBouts, MobilityBouts,...
+    MeanImmobileBoutTime, MeanMobileBouts, Immobile1MinBouts,...
+    Immobile1MinPercent] = AnalyzeFile(subject,aim,Time,Activity,bedTime,wakeTime)
 
 % Find maximum activity
 maxActi = max(Activity);
@@ -45,12 +47,18 @@ SleepBouts = cell(nDays,1);
 WakeBouts = cell(nDays,1);
 MeanSleepBout = cell(nDays,1);
 MeanWakeBout = cell(nDays,1);
+ImmobilityBouts = cell(nDays,1);
+MobilityBouts = cell(nDays,1);
+MeanImmobileBoutTime = cell(nDays,1);
+MeanMobileBouts = cell(nDays,1);
+Immobile1MinBouts = cell(nDays,1);
+Immobile1MinPercent = cell(nDays,1);
 
 dateFormat = 'dd-mmm-yy';
 dateTimeFormat = 'dd-mmm-yyyy HH:MM';
 
-plot(Time,Activity);
-datetick2;
+%plot(Time,Activity);
+%datetick;
 title({['Subject ',num2str(subject),' AIM ',num2str(aim)];...
         [datestr(analysisStartTime(1),dateFormat),' - ',datestr(analysisEndTime(end),dateFormat)]});
 hold on;
@@ -67,12 +75,12 @@ for i1 = 1:nDays
             [0,maxActi,maxActi,0],'r','FaceAlpha',.5);
     
     try
-        param = fullSleepAnalysis(Time,Activity,...
+        param = sleepAnalysis(Time,Activity,...
                 analysisStartTime(i1),analysisEndTime(i1),...
                 bedTimes(i1),wakeTimes(i1),'auto');
     catch err
         display(err.message);
-        %display(err.stack);
+        display(err.stack);
         continue;
     end
         
@@ -86,11 +94,20 @@ for i1 = 1:nDays
     WakeBouts{i1} = param.wakeBouts;
     MeanSleepBout{i1} = param.meanSleepBoutTime;
     MeanWakeBout{i1} = param.meanWakeBoutTime;
+    ImmobilityBouts{i1} = param.immobileBouts;
+    MobilityBouts{i1} = param.mobileBouts;
+    MeanImmobileBoutTime{i1} = param.meanImmobileBoutTime;
+    MeanMobileBouts{i1} = param.meanMobileBoutTime;
+    Immobile1MinBouts{i1} = param.immobile1MinBouts;
+    Immobile1MinPercent{i1} = param.immobile1MinPercent;
     
     clear param;
 end
 
-saveas(gcf,['plots',filesep,'sub',num2str(subject),'_AIM',num2str(aim),'_',datestr(analysisStartTime(1),'yyyy-mm-dd'),'.png']);
+projectFolder = fullfile([filesep,filesep],'root','projects',...
+    'NIH Alzheimers','Aim 3 Local (AnnaLokData)');
+saveas(gcf,[projectFolder, filesep,'plots',filesep,'sub',num2str(subject),...
+    '_AIM',num2str(aim),'_',datestr(analysisStartTime(1),'yyyy-mm-dd'),'.png']);
 hold off;
 
 end

@@ -40,6 +40,12 @@ output.SleepBouts = {};
 output.WakeBouts = {};
 output.MeanSleepBout = {};
 output.MeanWakeBout = {};
+output.ImmobilityBouts =  {};
+output.MobilityBouts =  {};
+output.MeanImmobileBoutTime =  {};
+output.MeanMobileBouts =  {};
+output.Immobile1MinBouts =  {};
+output.Immobile1MinPercent =  {};
 
 %% Begin main loop
 for i1 = 1:nSub
@@ -87,7 +93,10 @@ for i1 = 1:nSub
         tempActualWake,tempActualWakePercent,...
         tempSleepEfficiency,tempLatency,...
         tempSleepBouts,tempWakeBouts,...
-        tempMeanSleepBout,tempMeanWakeBout] = ...
+        tempMeanSleepBout,tempMeanWakeBout,...
+        tempImmobilityBouts, tempMobilityBouts,...
+        tempMeanImmobileBoutTime, tempMeanMobileBoutTime,...
+        tempImmobile1MinBouts, tempImmobile1MinPercent] = ...
         AnalyzeFile(subject(i1),AIM(i1),time,activity,bedTime(i1),getupTime(i1));
     
     %% Combine variables
@@ -105,6 +114,12 @@ for i1 = 1:nSub
     output.WakeBouts = [output.WakeBouts;tempWakeBouts];
     output.MeanSleepBout = [output.MeanSleepBout;tempMeanSleepBout];
     output.MeanWakeBout = [output.MeanWakeBout;tempMeanWakeBout];
+    output.ImmobilityBouts = [output.ImmobilityBouts;tempImmobilityBouts];
+    output.MobilityBouts =  [output.MobilityBouts;tempMobilityBouts];
+    output.MeanImmobileBoutTime = [output.MeanImmobileBoutTime;tempMeanImmobileBoutTime];
+    output.MeanMobileBouts = [ output.MeanMobileBouts;tempMeanMobileBoutTime];
+    output.Immobile1MinBouts = [output.Immobile1MinBouts;tempImmobile1MinBouts];
+    output.Immobile1MinPercent = [output.Immobile1MinPercent;tempImmobile1MinPercent];
 end
 
 close all;
