@@ -24,7 +24,7 @@ header1 = [{[]},{[]},AIM0Txt,spacer,{[]},AIM1Txt,spacer,{[]},AIM2Txt,spacer]; % 
 
 % Prepare second header row
 % Make variable names pretty
-prettyNames = lower(regexprep(varNames,'([^A-Z])([A-Z])','$1\r\n$2'));
+prettyNames = lower(regexprep(varNames,'([^A-Z])([A-Z])','$1 $2'));
 header2 = [{'line'},{[]},prettyNames,{[]},prettyNames,{[]},prettyNames];
 
 % Combine headers
