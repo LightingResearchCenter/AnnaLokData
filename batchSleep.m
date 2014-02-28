@@ -4,7 +4,7 @@ function batchSleep
 [parentDir,~,~] = fileparts(pwd);
 CDFtoolkit = fullfile(parentDir,'LRC-CDFtoolkit');
 DaysimeterSleepAlgorithm = fullfile(parentDir,'DaysimeterSleepAlgorithm');
-addpath('IO','sleepAnalysis',CDFtoolkit,DaysimeterSleepAlgorithm);
+addpath('IO',CDFtoolkit,DaysimeterSleepAlgorithm);
 
 
 %% File handling
@@ -24,31 +24,11 @@ dimePath = fullfile(textFolder,dimeFile);
 CDFDimePath = fullfile(cdfFolder,regexprep(dimeFile,'\.txt','.cdf'));
 
 %% Preallocate output
-nSub = length(subject);
-output = struct;
-output.line = [];
-output.subject = [];
-output.AIM = [];
-output.Date = {};
-output.ActualSleep = {};
-output.ActualSleepPercent = {};
-output.ActualWake = {};
-output.ActualWakePercent = {};
-output.SleepEfficiency = {};
-output.Latency = {};
-output.SleepBouts = {};
-output.WakeBouts = {};
-output.MeanSleepBout = {};
-output.MeanWakeBout = {};
-output.ImmobilityBouts =  {};
-output.MobilityBouts =  {};
-output.MeanImmobileBoutTime =  {};
-output.MeanMobileBouts =  {};
-output.Immobile1MinBouts =  {};
-output.Immobile1MinPercent =  {};
+nCDF = numel(CDFDimePath);
+output = cell(nCDF,1);
 
 %% Begin main loop
-for i1 = 1:nSub
+for i1 = 1:nCDF
     %% Load Dimesimeter file
     % Check if CDF versions exist
     if exist(CDFDimePath{i1},'file') == 2 % CDF Dimesimeter file exists
@@ -89,40 +69,10 @@ for i1 = 1:nSub
     
     %% Perform analysis
     % Run sleep analysis
-    [tempLine,tempSubject,tempAIM,tempDate,tempActualSleep,tempActualSleepPercent,...
-        tempActualWake,tempActualWakePercent,...
-        tempSleepEfficiency,tempLatency,...
-        tempSleepBouts,tempWakeBouts,...
-        tempMeanSleepBout,tempMeanWakeBout,...
-        tempImmobilityBouts, tempMobilityBouts,...
-        tempMeanImmobileBoutTime, tempMeanMobileBoutTime,...
-        tempImmobile1MinBouts, tempImmobile1MinPercent] = ...
+    output{i1} = ...
         AnalyzeFile(subject(i1),AIM(i1),time,activity,bedTime(i1),getupTime(i1));
     
-    %% Combine variables
-    output.line = [output.line;tempLine];
-    output.subject = [output.subject;tempSubject];
-    output.AIM = [output.AIM;tempAIM];
-    output.Date = [output.Date;tempDate];
-    output.ActualSleep = [output.ActualSleep;tempActualSleep];
-    output.ActualSleepPercent = [output.ActualSleepPercent;tempActualSleepPercent];
-    output.ActualWake = [output.ActualWake;tempActualWake];
-    output.ActualWakePercent = [output.ActualWakePercent;tempActualWakePercent];
-    output.SleepEfficiency = [output.SleepEfficiency;tempSleepEfficiency];
-    output.Latency = [output.Latency;tempLatency];
-    output.SleepBouts = [output.SleepBouts;tempSleepBouts];
-    output.WakeBouts = [output.WakeBouts;tempWakeBouts];
-    output.MeanSleepBout = [output.MeanSleepBout;tempMeanSleepBout];
-    output.MeanWakeBout = [output.MeanWakeBout;tempMeanWakeBout];
-    output.ImmobilityBouts = [output.ImmobilityBouts;tempImmobilityBouts];
-    output.MobilityBouts =  [output.MobilityBouts;tempMobilityBouts];
-    output.MeanImmobileBoutTime = [output.MeanImmobileBoutTime;tempMeanImmobileBoutTime];
-    output.MeanMobileBouts = [ output.MeanMobileBouts;tempMeanMobileBoutTime];
-    output.Immobile1MinBouts = [output.Immobile1MinBouts;tempImmobile1MinBouts];
-    output.Immobile1MinPercent = [output.Immobile1MinPercent;tempImmobile1MinPercent];
 end
-
-close all;
 
 %% Save output
 outputPath = fullfile(resultsFolder,['sleep_',datestr(now,'yyyy-mm-dd_HH-MM')]);
