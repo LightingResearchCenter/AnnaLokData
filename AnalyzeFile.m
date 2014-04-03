@@ -1,7 +1,7 @@
-function output = AnalyzeFile(subject,AIM,Time,Activity,bedTime,wakeTime)
+function output = AnalyzeFile(subject,AIM,time,activity,bedTime,wakeTime)
 
 %% Vectorize bed times and wake times
-startDays = floor(min(Time)):floor(max(Time));
+startDays = floor(min(time)):floor(max(time));
 bedTimes = startDays + bedTime;
 if bedTime > wakeTime
     wakeTimes = startDays + 1 + wakeTime;
@@ -9,12 +9,12 @@ else
     wakeTimes = startDays + wakeTime;
 end
 
-if bedTimes(end) > max(Time) || wakeTimes(end) > max(Time)
+if bedTimes(end) > max(time) || wakeTimes(end) > max(time)
     bedTimes(end) = [];
     wakeTimes(end) = [];
 end
 
-if bedTimes(1) < min(Time) || wakeTimes(1) < min(Time)
+if bedTimes(1) < min(time) || wakeTimes(1) < min(time)
     bedTimes(1) = [];
     wakeTimes(1) = [];
 end
@@ -22,6 +22,12 @@ end
 % Set analysis start and end times
 analysisStartTime = bedTimes - 20/60/24;
 analysisEndTime = wakeTimes + 20/60/24;
+
+%% Plot the data and save to file
+plotDir = '\\ROOT\projects\NIH Alzheimers\Aim 3 Local (AnnaLokData)\plots';
+plotName = ['sub',num2str(subject,'%02.0f'),'_wk',num2str(AIM),'_',datestr(time(1),'yyyy-mm-dd'),'.png'];
+plotPath = fullfile(plotDir,plotName);
+plotactivity(plotPath,time,activity,bedTimes,wakeTimes,subject,AIM);
 
 %% Preallocate sleep parameters
 nNights = numel(bedTimes);
@@ -33,7 +39,7 @@ dateFormat = 'mm/dd/yyyy';
 %% Call function to calculate sleep parameters for each day
 for i1 = 1:nNights
     try
-        output{i1} = sleepAnalysis(Time,Activity,...
+        output{i1} = sleepAnalysis(time,activity,...
                 analysisStartTime(i1),analysisEndTime(i1),...
                 bedTimes(i1),wakeTimes(i1),'auto');
         tempFields = fieldnames(output{i1})';
