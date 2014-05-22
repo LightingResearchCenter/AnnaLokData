@@ -1,4 +1,4 @@
-function output = phasorAnalysis(time, CS, activity, subject, week)
+function output = phasorAnalysis(time, CS, activity, CLA, subject, week)
 %PHASORANALYSIS Performs analysis on CS and activity
 
 %% Process and analyze data
@@ -18,6 +18,10 @@ activity = gaussian(activity, window);
 MagH = sqrt(sum((abs(f24H).^2))); % the magnitude including all the harmonics
 
 mCS = mean(CS(CS>0));
+nonzeroCla = CLA(CLA>0);
+mCla = mean(nonzeroCla);
+mLogCla = exp(mean(log(nonzeroCla)));
+
 f24abs = abs(f24);
 
 %% Assign output
@@ -32,5 +36,7 @@ output.magnitudeFirstHarmonic = f24abs;
 output.interdailyStability = IS;
 output.intradailyVariability = IV;
 output.meanNonzeroCS = mCS;
+output.meanNonzeroCLA = mCla;
+output.logMeanCLA = mLogCla;
 
 end

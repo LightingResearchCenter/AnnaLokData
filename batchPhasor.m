@@ -65,7 +65,7 @@ for i1 = 1:nCDF
     plotactivityandcs(plotPath,time,activity,CS,subject(i1),week(i1));
     
     % Perform analysis
-    output{i1} = phasorAnalysis(time, CS, activity, subject(i1), week(i1));
+    output{i1} = phasorAnalysis(time, CS, activity, CLA, subject(i1), week(i1));
     
 end
 
