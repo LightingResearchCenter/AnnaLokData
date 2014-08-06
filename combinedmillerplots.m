@@ -159,10 +159,17 @@ function plotdata(hourArray,csArray,activityArray,week)
 hAxes = axes;
 hold(hAxes,'on');
 
+hAxes2=axes('yaxislocation','right','color','none');
+
 set(hAxes,'XTick',0:2:24);
 set(hAxes,'TickDir','out');
 
+set(hAxes2,'XTick',[]);
+set(hAxes2,'XTickLabel','');
+set(hAxes2,'TickDir','out');
+
 xlim(hAxes,[0 24]);
+xlim(hAxes2,[0 24]);
 
 yMax = 0.7;
 if max(activityArray) > yMax
@@ -170,11 +177,14 @@ if max(activityArray) > yMax
 else
     yTick = 0:0.1:0.7;
     set(hAxes,'YTick',yTick);
+    set(hAxes2,'YTick',yTick);
 end
 ylim(hAxes,[0 yMax]);
+ylim(hAxes2,[0 yMax]);
 box('off');
 
 % Plot AI
+
 area1 = area(hAxes,hourArray,activityArray,'LineStyle','none');
 set(area1,...
     'FaceColor',[180, 211, 227]/256,'EdgeColor','none',...
@@ -184,14 +194,17 @@ set(area1,...
 plot1 = plot(hAxes,hourArray,csArray);
 set(plot1,...
     'Color','k','LineWidth',2,...
-    'DisplayName','Circadian Stimulus (CS)');
+    'DisplayName','Circadian Stimulus');
 
 % Create legend
 legend1 = legend([area1,plot1]);
 set(legend1,'Orientation','horizontal','Location','North');
 
 % Create x-axis label
-xlabel('Time (hours)');
+xlabel(hAxes,'Time (hours)');
+
+ylabel(hAxes,'Circadian Stimulus (CS)');
+ylabel(hAxes2,'Activity Index (AI)');
 
 % Create title
 switch week
