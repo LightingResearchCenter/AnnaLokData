@@ -9,7 +9,7 @@ addpath('IO',CDFtoolkit,'phasorAnalysis');
 % File handling
 projectFolder = '\\ROOT\projects\NIH Alzheimers\Aim 3 Local (AnnaLokData)';
 combinedIndexPath = fullfile(projectFolder,'combinedIndex.xlsx');
-cdfFolder = fullfile(projectFolder,'cdfData');
+cdfFolder = fullfile(projectFolder,'reprocessedCdfData');
 resultsFolder = fullfile(projectFolder,'results');
 
 % Import the index

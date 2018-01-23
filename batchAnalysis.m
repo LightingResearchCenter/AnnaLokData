@@ -11,7 +11,7 @@ projectFolder = fullfile([filesep,filesep],'root','projects',...
     'NIH Alzheimers','AnnaLokData');
 indexPath = fullfile(projectFolder,'index.xlsx');
 textFolder = fullfile(projectFolder,'textData');
-cdfFolder = fullfile(projectFolder,'cdfData');
+cdfFolder = fullfile(projectFolder,'reprocessedCdfData');
 resultsFolder = fullfile(projectFolder,'results');
 
 % Import the index

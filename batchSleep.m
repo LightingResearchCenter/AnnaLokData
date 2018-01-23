@@ -10,7 +10,7 @@ addpath('IO',CDFtoolkit,DaysimeterSleepAlgorithm);
 % File handling
 projectFolder = '\\ROOT\projects\NIH Alzheimers\Aim 3 Local (AnnaLokData)';
 indexPath = fullfile(projectFolder,'index.xlsx');
-cdfFolder = fullfile(projectFolder,'cdfData');
+cdfFolder = fullfile(projectFolder,'reprocessedCdfData');
 resultsFolder = fullfile(projectFolder,'results');
 
 % Import the index

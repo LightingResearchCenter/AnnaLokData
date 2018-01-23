@@ -12,7 +12,7 @@ validSubjectArray = [5,8,10,11,12,13,15,16,20];
 % File handling
 projectFolder = '\\ROOT\projects\NIH Alzheimers\Aim 3 Local (AnnaLokData)';
 indexPath = fullfile(projectFolder,'phasorIndex.xlsx');
-cdfFolder = fullfile(projectFolder,'cdfData');
+cdfFolder = fullfile(projectFolder,'reprocessedCdfData');
 plotDir = fullfile(projectFolder,'combinedMillerPlots');
 
 % Import the index
